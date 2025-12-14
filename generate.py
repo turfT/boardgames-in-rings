@@ -20,9 +20,9 @@ def generate_html():
     """生成 HTML 文件"""
     # 读取三个 txt 文件
     data_dir = Path(__file__).parent / 'data'
-    file1_data = read_txt_file(data_dir / 'file1.txt')
-    file2_data = read_txt_file(data_dir / 'file2.txt')
-    file3_data = read_txt_file(data_dir / 'file3.txt')
+    file1_data = read_txt_file(data_dir / 'game_mechanics.txt')
+    file2_data = read_txt_file(data_dir / 'theme.txt')
+    file3_data = read_txt_file(data_dir / 'art_components.txt')
     
     # 将数据转换为 JavaScript 数组格式
     js_data1 = '["' + '", "'.join(file1_data) + '"]'
@@ -34,7 +34,7 @@ def generate_html():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>随机选择器</title>
+    <title>boardgame in rings</title>
     <style>
         * {{
             margin: 0;
@@ -104,6 +104,7 @@ def generate_html():
             margin: 20px 0;
             border-left: 4px solid #667eea;
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }}
         
         .result-item:hover {{
@@ -111,11 +112,46 @@ def generate_html():
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }}
         
+        .result-item-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }}
+        
+        .result-item-actions {{
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }}
+        
+        .btn-small {{
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.85em;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }}
+        
+        .btn-small:hover {{
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }}
+        
+        .btn-small:active {{
+            transform: translateY(0);
+        }}
+        
         .result-label {{
             color: #667eea;
             font-size: 0.9em;
             font-weight: 600;
-            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }}
@@ -179,6 +215,16 @@ def generate_html():
                 font-size: 1em;
                 width: 100%;
             }}
+            
+            .btn-small {{
+                padding: 8px 14px;
+                font-size: 0.9em;
+            }}
+            
+            .result-item-header {{
+                flex-wrap: wrap;
+                gap: 8px;
+            }}
         }}
     </style>
 </head>
@@ -186,8 +232,8 @@ def generate_html():
     <div class="container">
         <!-- 欢迎页面 -->
         <div class="welcome-screen" id="welcomeScreen">
-            <h1>🎲 随机选择器</h1>
-            <p>欢迎使用随机选择器！<br>点击下方按钮开始随机选择</p>
+            <h1>boardgame in rings</h1>
+            <p>欢迎使用 boardgame in rings！<br>点击下方按钮开始随机选择</p>
             <button class="btn" onclick="startApp()">开始</button>
         </div>
         
@@ -196,15 +242,30 @@ def generate_html():
             <h1>随机结果</h1>
             <div class="results-container" id="resultsContainer">
                 <div class="result-item">
-                    <div class="result-label">游戏性+规则（无实体）</div>
+                    <div class="result-item-header">
+                        <div class="result-label">游戏性+规则（无实体）</div>
+                        <div class="result-item-actions">
+                            <button class="btn-small" onclick="reselectItem(1)" title="重新随机此项">🔄</button>
+                        </div>
+                    </div>
                     <div class="result-content" id="result1">-</div>
                 </div>
                 <div class="result-item">
-                    <div class="result-label">主题/背景</div>
+                    <div class="result-item-header">
+                        <div class="result-label">主题/背景</div>
+                        <div class="result-item-actions">
+                            <button class="btn-small" onclick="reselectItem(2)" title="重新随机此项">🔄</button>
+                        </div>
+                    </div>
                     <div class="result-content" id="result2">-</div>
                 </div>
                 <div class="result-item">
-                    <div class="result-label">美术+配件+实体</div>
+                    <div class="result-item-header">
+                        <div class="result-label">美术+配件+实体</div>
+                        <div class="result-item-actions">
+                            <button class="btn-small" onclick="reselectItem(3)" title="重新随机此项">🔄</button>
+                        </div>
+                    </div>
                     <div class="result-content" id="result3">-</div>
                 </div>
             </div>
@@ -252,6 +313,23 @@ def generate_html():
         
         function reselect() {{
             selectRandom();
+        }}
+        
+        function reselectItem(index) {{
+            let item, elementId;
+            if (index === 1) {{
+                item = getRandomItem(data1);
+                elementId = 'result1';
+            }} else if (index === 2) {{
+                item = getRandomItem(data2);
+                elementId = 'result2';
+            }} else if (index === 3) {{
+                item = getRandomItem(data3);
+                elementId = 'result3';
+            }}
+            if (item && elementId) {{
+                document.getElementById(elementId).textContent = item;
+            }}
         }}
     </script>
 </body>
