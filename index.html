@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机选择器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .welcome-screen {
+            display: block;
+        }
+        
+        .welcome-screen.hidden {
+            display: none;
+        }
+        
+        .main-screen {
+            display: none;
+        }
+        
+        .main-screen.show {
+            display: block;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        .welcome-screen h1 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-screen p {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .result-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-label {
+            color: #667eea;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .result-content {
+            color: #333;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .results-container {
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .welcome-screen h1 {
+                font-size: 2.2em;
+            }
+            
+            .welcome-screen p {
+                font-size: 1em;
+            }
+            
+            .result-content {
+                font-size: 1.1em;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1em;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 欢迎页面 -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1>🎲 随机选择器</h1>
+            <p>欢迎使用随机选择器！<br>点击下方按钮开始随机选择</p>
+            <button class="btn" onclick="startApp()">开始</button>
+        </div>
+        
+        <!-- 主功能页面 -->
+        <div class="main-screen" id="mainScreen">
+            <h1>随机结果</h1>
+            <div class="results-container" id="resultsContainer">
+                <div class="result-item">
+                    <div class="result-label">游戏性+规则（无实体）</div>
+                    <div class="result-content" id="result1">-</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">主题/背景</div>
+                    <div class="result-content" id="result2">-</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">美术+配件+实体</div>
+                    <div class="result-content" id="result3">-</div>
+                </div>
+            </div>
+            <button class="btn" onclick="reselect()">重新选择</button>
+        </div>
+    </div>
+    
+    <script>
+        // 数据数组
+        const data1 = ["支持4人以上", "资源紧张，卡", "有说书环节", "随机性大", "规则简明", "游戏过程中会会引入新规则", "支持solo", "重度游戏", "先手优势明显，后位补偿不足", "可变玩家能力", "沙盘模拟", "包含区控元素", "工人放置", "存在订单元素", "玩家可以改变主版图（轨道/资源除外）", "卡牌构筑", "规则进行中需要APP辅助进行", "骰子游戏", "玩家全程参与", "有上帝视角玩家", "兵抓贼", "心里博弈", "吃堆", "可以使用其他玩家的成果/资源/基础设施", "以资金作为唯一终局计分", "对资源进行折算参与终局计分", "有明确固定的终局轮数", "有旋转这个动作", "除solo外的官方变体规则", "有超过1个扩展(不算promo）", "规则里有“联通”这一概念", "可以主动变更起始玩家", "有攻击这一概念", "有卡牌且有多种使用方法", "有发射这一概念", "容错低，滚雪球", "有维护费", "会发生价格变化", "有摞起来叠放的行动（而不是初始设置）"];
+        const data2 = ["有非人类动物", "科幻主题", "包含真实存在的生物", "包含建筑物", "有种地元素", "没有人类", "存在死亡/宰杀", "童话故事", "有背景故事", "资源与物品中包含五谷杂粮（小麦等）", "资源与物品中包含工艺品（陶片、画幅等）", "资源与物品中包含建筑材料（木材、石块等）", "社会结构和人物背景中涉及中世纪领主、修士、修女、农夫、骑士、商队主管等", "存在商船、港口等海上贸易元素", "包含生育相关元素", "有电", "有水", "漫威英雄", "DC英雄", "三国演义", "水许传", "西游记", "国产动画片", "二次元", "军事类", "一战二战", "古代文明", "人类起源", "存在交通工具", "有魔法之类的非现实元素", "有现实且具体的地理位置"];
+        const data3 = ["包含木质配件", "丑", "色彩丰富", "盒子比伯明翰大", "收纳困难，配件繁多", "游戏主版图大", "有骰子", "有两种及以上尺寸的卡牌", "有非木质模型", "有起始玩家标记", "价格昂贵", "有实体钱币", "画风写实", "有三角形元素", "众筹过", "有豪华版", "一盒难求", "有正六边形元素", "超过50张卡牌", "没有文字量", "已经有祖国版了！", "有非多边形，圆形的异形token", "扩展众多", "正方形盒子", "有个人玩家版图", "两种以上资源配件（包括钱）"];
+        
+        // 检查是否已经访问过（跳过欢迎页面）
+        const hasVisited = localStorage.getItem('hasVisited');
+        
+        if (hasVisited) {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('mainScreen').classList.add('show');
+            selectRandom();
+        }
+        
+        function startApp() {
+            localStorage.setItem('hasVisited', 'true');
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('mainScreen').classList.add('show');
+            selectRandom();
+        }
+        
+        function getRandomItem(array) {
+            if (array.length === 0) return '';
+            const randomIndex = Math.floor(Math.random() * array.length);
+            return array[randomIndex];
+        }
+        
+        function selectRandom() {
+            const item1 = getRandomItem(data1);
+            const item2 = getRandomItem(data2);
+            const item3 = getRandomItem(data3);
+            
+            document.getElementById('result1').textContent = item1;
+            document.getElementById('result2').textContent = item2;
+            document.getElementById('result3').textContent = item3;
+        }
+        
+        function reselect() {
+            selectRandom();
+        }
+    </script>
+</body>
+</html>
